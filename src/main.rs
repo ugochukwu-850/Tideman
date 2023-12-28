@@ -42,10 +42,9 @@ impl Pair {
 fn main() {
     let start = Instant::now();
     // max number of candidates
-    const VOTE_COUNT: usize = 9;
 
     // constant of candidates
-    let candidates: Vec<String> = vec!["Alice", "Charlie", "Bob"]
+    let candidates: Vec<String> = vec!["Chizaram", "Charlie", "Bob", "Alice"]
         .into_iter()
         .map(|f| f.to_string())
         .collect();
@@ -60,7 +59,7 @@ fn main() {
             candidates.to_owned(),
             rev.clone(),
             rev,
-            vec!["Alice", "Bob", "Charlie"]
+            vec!["Chizaram", "Bob", "Charlie", "Alice"]
                 .into_iter()
                 .map(|f| f.to_string())
                 .collect::<Vec<String>>(),
@@ -74,12 +73,13 @@ fn main() {
     // query for votes
     let min_s = Instant::now();
     let voted = Mutex::new(votes());
-    (0..1000).into_par_iter().for_each(|_| {
+    let gen_v = 10000;
+    (0..gen_v).into_par_iter().for_each(|_| {
         let mut voted = voted.lock().unwrap();
         voted.extend(votes())
     });
     let voted = voted.lock().unwrap().to_owned();
-    println!("Generating multiple votes took {} seconds", (Instant::now() - min_s).as_secs_f64());
+    println!("Generating {gen_v} votes took {} seconds", (Instant::now() - min_s).as_secs_f64());
     for vote in voted {
         //init active voters ranks
         let mut ranks: Vec<usize> = vec![0; candidates.len()];
@@ -178,7 +178,7 @@ fn lock_pair(pairs: &mut Vec<Pair>, lock_graph: &mut Vec<Vec<bool>>) {
     }
 }
 
-fn print_winner(locked_graph: &Vec<Vec<bool>>, candidates: &Vec<String>) {
+fn print_winner(locked_graph: &Vec<Vec<bool>>, _candidates: &Vec<String>) {
     'header: for f in 0..locked_graph[0].len() {
         for x in 0..locked_graph[f].len()
         {
@@ -192,7 +192,7 @@ fn print_winner(locked_graph: &Vec<Vec<bool>>, candidates: &Vec<String>) {
 
             if x == locked_graph[f].len()-1 {
                 // found winner just //print
-                //println!("                {}            ", candidates[f])
+                println!("                {}            ", _candidates[f])
             }
         }
     }
